@@ -817,5 +817,4 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
   // In case you're wrapping the socket.io client to prevent pollution of the
   // global namespace, you can replace the global `io` with your own `io` here:
   return SailsIOClient();
-
 })();
