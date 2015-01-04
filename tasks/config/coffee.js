@@ -31,7 +31,27 @@ module.exports = function(grunt) {
 				dest: '.tmp/public/js/',
 				ext: '.js'
 			}]
-		}
+		},
+    coffees:{
+      options: {
+        bare: true,
+        sourceMap: true,
+        sourceRoot: './'
+      },
+      files: [{
+        expand: true,
+        cwd: 'coffees/',
+        src: ['**/*.coffee'],
+        dest: 'api/',
+        ext: '.js'
+      },{
+        expand: true,
+        cwd: 'coffees/',
+        src: ['**/*.coffee'],
+        dest: 'api/',
+        ext: '.js'
+      }]
+    }
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-coffee');

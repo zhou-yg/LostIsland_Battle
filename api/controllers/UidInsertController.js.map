@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "UidInsertController.js",
+  "sourceRoot": "./",
+  "sources": [
+    "UidInsertController.coffee"
+  ],
+  "names": [],
+  "mappings": "AAAA,MAAM,CAAC,OAAP,GACE;AAAA,EAAA,OAAA,EAAQ,SAAC,IAAD,EAAM,IAAN,GAAA;AACN,QAAA,GAAA;AAAA,IAAA,GAAA,GAAM,IAAI,CAAC,KAAL,CAAW,KAAX,CAAN,CAAA;AAAA,IACA,OAAO,CAAC,GAAR,CAAY,OAAA,GAAQ,GAApB,CADA,CAAA;WAGA,IAAI,CAAC,IAAL,CAAU,OAAV,EAJM;EAAA,CAAR;CADF,CAAA"
+}

@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "TestController.js",
+  "sourceRoot": "",
+  "sources": [
+    "TestController.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,EAAA,OAAO,CAAC,GAAR,CAAY,OAAZ,CAAA,CAAA;AAAA"
+}

@@ -25,6 +25,7 @@ module.exports.sockets = {
 
     // By default, do nothing.
     console.log(' connected:',socket.id);
+    console.log('name: ',userReadyStack.getName());
   },
 
 
