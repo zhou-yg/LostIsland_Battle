@@ -34,8 +34,8 @@ module.exports.routes = {
 
   '/': {
     view: 'homepage'
-  }
-
+  },
+  '/addPlayer':'PlayerController.add'
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *

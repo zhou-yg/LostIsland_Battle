@@ -21,11 +21,10 @@ module.exports.sockets = {
   * automatically.                                                           *
   *                                                                          *
   ***************************************************************************/
+  // By default, do nothing.
   onConnect: function(session, socket) {
-
-    // By default, do nothing.
     console.log(' connected:',socket.id);
-    console.log('name: ',userReadyStack.getName());
+    userOnlineList.addPlayer(socket.id)
   },
 
 
@@ -35,11 +34,11 @@ module.exports.sockets = {
   * disconnects                                                              *
   *                                                                          *
   ***************************************************************************/
+  // By default: do nothing.
   onDisconnect: function(session, socket) {
     console.log('disconnect:',socket.id);
-    // By default: do nothing.
-  },
-
+    userOnlineList.removePlayer(socket.id);
+  }
 
   /***************************************************************************
   *                                                                          *

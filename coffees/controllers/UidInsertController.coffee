@@ -3,5 +3,4 @@ module.exports =
     uid = _req.param 'uid'
 
 
-
     _res.text 'nihao'
