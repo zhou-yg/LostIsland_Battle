@@ -1,3 +1,4 @@
+###
 redis = require 'redis'
 redisClient = redis.createClient()
 redisClient.on 'connect',(err,data)->
@@ -5,10 +6,10 @@ redisClient.on 'connect',(err,data)->
     console.log err
   else
     console.log 'redis:connected'
-
+###
 class Player
-  construct:(@sid)->
-    @state = 'waiting'
+  constructor:(@sid,@uid)->
+    @state = 'online'
 
   normal:->
     @state = 'online'
@@ -25,8 +26,8 @@ playerOnlineList = []
 
 module.exports =
 
-  addPlayer:(sid)->
-    player = new Player(sid)
+  addPlayer:(sid,uid)->
+    player = new Player(sid,uid)
     playerOnlineList.push(player)
 
   getPlayer:(sid)->
@@ -35,13 +36,27 @@ module.exports =
         break
     return p
 
+  getPlayerByUid:(uid)->
+    getResult = false
+    for p in playerOnlineList
+      if p.uid is uid
+        getResult = true
+        break
+
+    return if getResult then p else null
+
+  #下线，同时移除在线列表，和等待列表
   removePlayer:(sid)->
     for p,i in playerOnlineList
       if p.sid is sid
         break
 
     if i isnt undefined
-      return playerOnlineList.splice(i,1)
+      playerOnlineList.splice(i,1)
+      playerWaitList.remove(p)
 
   showList:->
     console.log playerOnlineList
+
+  display:->
+    return playerOnlineList

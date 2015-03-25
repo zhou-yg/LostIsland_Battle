@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "paramHandler.js",
+  "sourceRoot": "./",
+  "sources": [
+    "paramHandler.coffee"
+  ],
+  "names": [],
+  "mappings": "AAAA,MAAM,CAAC,OAAP,GAAiB,SAAC,GAAD,EAAK,GAAL,EAAS,IAAT,GAAA;AACf,MAAA,SAAA;AAAA,EAAA,SAAA,GAAY,GAAG,CAAC,KAAJ,CAAU,WAAV,CAAZ,CAAA;AACA,EAAA,IAAG,SAAH;AACE,IAAA,GAAG,CAAC,SAAJ,GAAgB,IAAI,CAAC,KAAL,CAAW,SAAX,CAAhB,CADF;GADA;SAIA,IAAA,CAAA,EALe;AAAA,CAAjB,CAAA"
+}

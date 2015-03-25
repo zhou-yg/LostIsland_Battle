@@ -24,7 +24,6 @@ module.exports.sockets = {
   // By default, do nothing.
   onConnect: function(session, socket) {
     console.log(' connected:',socket.id);
-    userOnlineList.addPlayer(socket.id)
   },
 
 

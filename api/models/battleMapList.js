@@ -1,13 +1,11 @@
 var BattleMapOne, battleMapList, matchFn, recordIndex;
 
 BattleMapOne = (function() {
-  function BattleMapOne() {}
-
-  BattleMapOne.prototype.construct = function(p1, p2) {
+  function BattleMapOne(p1, p2) {
     this.p1 = p1;
     this.p2 = p2;
-    return this.recordId = recordIndex++;
-  };
+    this.recordId = recordIndex++;
+  }
 
   return BattleMapOne;
 
@@ -15,11 +13,12 @@ BattleMapOne = (function() {
 
 matchFn = function(player) {
   var rivalPlayer;
-  rivalPlayer = playerWaitList.get();
+  rivalPlayer = playerWaitList.get(player);
   if (rivalPlayer) {
     return rivalPlayer;
   } else {
-    return playerWaitList.add(player);
+    playerWaitList.add(player);
+    return null;
   }
 };
 
@@ -28,13 +27,22 @@ recordIndex = 0;
 battleMapList = [];
 
 module.exports = {
-  match: function(sid) {
+  match: function(uid) {
     var battleRecord, player, rivalPlayer;
-    player = userOnlineList.getPlayer(sid);
+    player = userOnlineList.getPlayerByUid(uid);
+    if (player.state === player.constructor.WAIT_STATE) {
+      return 'already wait';
+    }
     rivalPlayer = matchFn(player);
     if (rivalPlayer) {
+      player.play();
+      rivalPlayer.play();
       battleRecord = new BattleMapOne(player, rivalPlayer);
-      return battleMapList.push(battleRecord);
+      battleMapList.push(battleRecord);
+      return rivalPlayer;
+    } else {
+      player.wait();
+      return 'wait';
     }
   },
   remove: function(recordIndex) {
@@ -48,6 +56,9 @@ module.exports = {
     if (i !== void 0) {
       return battleMapList.splice(i, 1);
     }
+  },
+  display: function() {
+    return battleMapList;
   }
 };
 

@@ -26,8 +26,10 @@ module.exports.policies = {
   *                                                                          *
   ***************************************************************************/
 
-  // '*': true,
-
+  //'*': true,
+  PlayerController:{
+    '*':'paramHandler'
+  }
   /***************************************************************************
   *                                                                          *
   * Here's an example of mapping some policies to run before a controller    *

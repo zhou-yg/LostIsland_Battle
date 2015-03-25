@@ -1,20 +1,30 @@
 module.exports = {
   add: function(req, res) {
-    var sid;
+    var sid, uid;
     sid = req.socket.id;
-    console.log('s&u:', sid);
+    uid = req.param('uid');
+    userOnlineList.addPlayer(sid, uid);
     return res.json({
-      'sid': sid
+      'sid': sid,
+      'uid': uid
     });
   },
   match: function(req, res) {
-    var sid;
-    sid = req.socket.id;
-    battleMapList.match(sid);
-    return res.json({
-      result: true,
-      data: 'waiting'
-    });
+    var returnData, rivalPlayer, uid;
+    uid = req.parameter.uid;
+    rivalPlayer = battleMapList.match(uid);
+    if (rivalPlayer.sid) {
+      sails.sockets.emit(rivalPlayer.sid, 'match', {
+        uid: userOnlineList.getPlayerByUid(uid).uid
+      });
+    }
+    returnData = {
+      result: !!rivalPlayer,
+      data: rivalPlayer.uid ? {
+        uid: rivalPlayer.uid
+      } : rivalPlayer
+    };
+    return res.json(returnData);
   }
 };
 
