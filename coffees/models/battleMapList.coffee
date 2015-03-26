@@ -30,6 +30,15 @@ module.exports =
 
       battleRecord = new BattleMapOne(player,rivalPlayer)
       battleMapList.push(battleRecord)
+
+      #匹配，通知页面
+      sails.sockets.emit(player.sid,'match',{
+        uid:userOnlineList.getPlayerByUid(uid).uid
+      })
+      sails.sockets.emit(rivalPlayer.sid,'match',{
+        uid:userOnlineList.getPlayerByUid(uid).uid
+      })
+
       return rivalPlayer
     else
       player.wait()

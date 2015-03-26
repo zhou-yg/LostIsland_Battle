@@ -39,6 +39,12 @@ module.exports = {
       rivalPlayer.play();
       battleRecord = new BattleMapOne(player, rivalPlayer);
       battleMapList.push(battleRecord);
+      sails.sockets.emit(player.sid, 'match', {
+        uid: userOnlineList.getPlayerByUid(uid).uid
+      });
+      sails.sockets.emit(rivalPlayer.sid, 'match', {
+        uid: userOnlineList.getPlayerByUid(uid).uid
+      });
       return rivalPlayer;
     } else {
       player.wait();

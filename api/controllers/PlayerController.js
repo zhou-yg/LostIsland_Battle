@@ -13,16 +13,8 @@ module.exports = {
     var returnData, rivalPlayer, uid;
     uid = req.parameter.uid;
     rivalPlayer = battleMapList.match(uid);
-    if (rivalPlayer.sid) {
-      sails.sockets.emit(rivalPlayer.sid, 'match', {
-        uid: userOnlineList.getPlayerByUid(uid).uid
-      });
-    }
     returnData = {
-      result: !!rivalPlayer,
-      data: rivalPlayer.uid ? {
-        uid: rivalPlayer.uid
-      } : rivalPlayer
+      result: !!rivalPlayer.uid
     };
     return res.json(returnData);
   }

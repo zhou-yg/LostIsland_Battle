@@ -14,15 +14,9 @@ module.exports =
   match:(req,res)->
     uid = req.parameter.uid
     rivalPlayer = battleMapList.match(uid)
-    #匹配
-    if rivalPlayer.sid
-      sails.sockets.emit(rivalPlayer.sid,'match',{
-        uid:userOnlineList.getPlayerByUid(uid).uid
-      })
 
     returnData = {
-      result:!!rivalPlayer
-      data:if rivalPlayer.uid then { uid:rivalPlayer.uid } else rivalPlayer
+      result:!!rivalPlayer.uid
     }
 
     res.json returnData
