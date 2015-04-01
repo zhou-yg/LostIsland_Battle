@@ -33,10 +33,10 @@ module.exports =
 
       #匹配，通知页面
       sails.sockets.emit(player.sid,'match',{
-        uid:userOnlineList.getPlayerByUid(uid).uid
+        uid:rivalPlayer.uid
       })
       sails.sockets.emit(rivalPlayer.sid,'match',{
-        uid:userOnlineList.getPlayerByUid(uid).uid
+        uid:uid
       })
 
       return rivalPlayer
