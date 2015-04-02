@@ -30,7 +30,7 @@ module.exports =
     player = new Player(sid,uid)
     playerOnlineList.push(player)
 
-  getPlayer:(sid)->
+  getPlayerBySid:(sid)->
     for p,i in playerOnlineList
       if p.sid is sid
         break

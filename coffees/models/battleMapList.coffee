@@ -1,8 +1,44 @@
-
 class BattleMapOne
   constructor:(@p1,@p2)->
     @recordId = recordIndex++
+    @p1.recordId = @p2.recordId = @recordId
 
+    @chessRecordArr = []
+    #0未插入，1插入中，0插入完成
+    @chessRecordArr.state = 0
+
+  checkUid:(uid)->
+    return @p1.uid is uid or @p2.uid is uid
+
+  pushChess:(uid,chessI)->
+    if !@checkUid(uid)
+      return false
+
+    chessRecordArr = @chessRecordArr
+    key = 'u'+uid
+
+    if chessRecordArr.state is 0
+      chessRecordArr.push {
+        key:chessI
+      }
+      chessRecordArr.state = 1
+    else if chessRecordArr.state is 1
+      record = chessRecordArr[chessRecordArr.length-1]
+      if !record[key]
+        record[key] = chessI
+        chessRecordArr.state = 0
+        return record
+
+    return false
+
+  getPlayers:(uid)->
+    if @p1.uid is uid
+      return [@p1,@p2]
+
+    else if @p2.uid is uid
+      return [@p2,@p1]
+
+    return false
 
 matchFn = (player)->
   rivalPlayer = playerWaitList.get(player)
@@ -44,13 +80,61 @@ module.exports =
       player.wait()
       return 'wait'
 
-  remove:(recordIndex)->
+  fight:(uid,chessI)->
+    recordMap = @getRecordByUid(uid)
+    #记录
+    pushResult = recordMap.pushChess uid,chessI
+    playersArr = recordMap.getPlayers(uid)
+
+    #分发
+    if pushResult
+      sails.sockets.emit playersArr[0].sid,{
+        record:pushResult
+      }
+      sails.sockets.emit playersArr[1].sid,{
+        record:pushResult
+      }
+      return true
+    else
+      return false
+
+
+  #---------------------#
+  getRecordByRid:(recordIndex)->
     for recordMap,i in battleMapList
       if recordMap.recordId is recordIndex
         break;
 
     if i isnt undefined
-      battleMapList.splice(i,1)
+      return battleMapList[i]
+    return false
+
+  getRecordByUid:(uid)->
+    for recordMap,i in battleMapList
+      if recordMap.checkUid(uid)
+        break;
+
+    if i isnt undefined
+      return battleMapList[i]
+    return false
+
+  removeRecordByUid:(uid)->
+    for recordMap,i in battleMapList
+      if recordMap.checkUid(uid)
+        break;
+
+    if i isnt undefined
+      return battleMapList.splice(i,1)
+    return false
+
+  removeRecordByRid:(recordIndex)->
+    for recordMap,i in battleMapList
+      if recordMap.recordId is recordIndex
+        break;
+
+    if i isnt undefined
+      return battleMapList.splice(i,1)
+    return false
 
   display:->
     return battleMapList

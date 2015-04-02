@@ -5,7 +5,46 @@ BattleMapOne = (function() {
     this.p1 = p1;
     this.p2 = p2;
     this.recordId = recordIndex++;
+    this.p1.recordId = this.p2.recordId = this.recordId;
+    this.chessRecordArr = [];
+    this.chessRecordArr.state = 0;
   }
+
+  BattleMapOne.prototype.checkUid = function(uid) {
+    return this.p1.uid === uid || this.p2.uid === uid;
+  };
+
+  BattleMapOne.prototype.pushChess = function(uid, chessI) {
+    var chessRecordArr, key, record;
+    if (!this.checkUid(uid)) {
+      return false;
+    }
+    chessRecordArr = this.chessRecordArr;
+    key = 'u' + uid;
+    if (chessRecordArr.state === 0) {
+      chessRecordArr.push({
+        key: chessI
+      });
+      chessRecordArr.state = 1;
+    } else if (chessRecordArr.state === 1) {
+      record = chessRecordArr[chessRecordArr.length - 1];
+      if (!record[key]) {
+        record[key] = chessI;
+        chessRecordArr.state = 0;
+        return record;
+      }
+    }
+    return false;
+  };
+
+  BattleMapOne.prototype.getPlayers = function(uid) {
+    if (this.p1.uid === uid) {
+      return [this.p1, this.p2];
+    } else if (this.p2.uid === uid) {
+      return [this.p2, this.p1];
+    }
+    return false;
+  };
 
   return BattleMapOne;
 
@@ -51,7 +90,63 @@ module.exports = {
       return 'wait';
     }
   },
-  remove: function(recordIndex) {
+  fight: function(uid, chessI) {
+    var playersArr, pushResult, recordMap;
+    recordMap = this.getRecordByUid(uid);
+    pushResult = recordMap.pushChess(uid, chessI);
+    playersArr = recordMap.getPlayers(uid);
+    if (pushResult) {
+      sails.sockets.emit(playersArr[0].sid, {
+        record: pushResult
+      });
+      sails.sockets.emit(playersArr[1].sid, {
+        record: pushResult
+      });
+      return true;
+    } else {
+      return false;
+    }
+  },
+  getRecordByRid: function(recordIndex) {
+    var i, recordMap, _i, _len;
+    for (i = _i = 0, _len = battleMapList.length; _i < _len; i = ++_i) {
+      recordMap = battleMapList[i];
+      if (recordMap.recordId === recordIndex) {
+        break;
+      }
+    }
+    if (i !== void 0) {
+      return battleMapList[i];
+    }
+    return false;
+  },
+  getRecordByUid: function(uid) {
+    var i, recordMap, _i, _len;
+    for (i = _i = 0, _len = battleMapList.length; _i < _len; i = ++_i) {
+      recordMap = battleMapList[i];
+      if (recordMap.checkUid(uid)) {
+        break;
+      }
+    }
+    if (i !== void 0) {
+      return battleMapList[i];
+    }
+    return false;
+  },
+  removeRecordByUid: function(uid) {
+    var i, recordMap, _i, _len;
+    for (i = _i = 0, _len = battleMapList.length; _i < _len; i = ++_i) {
+      recordMap = battleMapList[i];
+      if (recordMap.checkUid(uid)) {
+        break;
+      }
+    }
+    if (i !== void 0) {
+      return battleMapList.splice(i, 1);
+    }
+    return false;
+  },
+  removeRecordByRid: function(recordIndex) {
     var i, recordMap, _i, _len;
     for (i = _i = 0, _len = battleMapList.length; _i < _len; i = ++_i) {
       recordMap = battleMapList[i];
@@ -62,6 +157,7 @@ module.exports = {
     if (i !== void 0) {
       return battleMapList.splice(i, 1);
     }
+    return false;
   },
   display: function() {
     return battleMapList;

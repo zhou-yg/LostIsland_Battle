@@ -47,7 +47,7 @@ module.exports = {
     player = new Player(sid, uid);
     return playerOnlineList.push(player);
   },
-  getPlayer: function(sid) {
+  getPlayerBySid: function(sid) {
     var i, p, _i, _len;
     for (i = _i = 0, _len = playerOnlineList.length; _i < _len; i = ++_i) {
       p = playerOnlineList[i];
