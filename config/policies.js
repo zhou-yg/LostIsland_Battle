@@ -29,6 +29,9 @@ module.exports.policies = {
   //'*': true,
   PlayerController:{
     '*':'paramHandler'
+  },
+  BattleController:{
+    '*':'paramHandler'
   }
   /***************************************************************************
   *                                                                          *

@@ -15,23 +15,23 @@ BattleMapOne = (function() {
   };
 
   BattleMapOne.prototype.pushChess = function(uid, chessI) {
-    var chessRecordArr, key, record;
+    var chessRecordArr, key, recordObj;
     if (!this.checkUid(uid)) {
       return false;
     }
     chessRecordArr = this.chessRecordArr;
     key = 'u' + uid;
     if (chessRecordArr.state === 0) {
-      chessRecordArr.push({
-        key: chessI
-      });
+      recordObj = {};
+      recordObj[key] = chessI;
+      chessRecordArr.push(recordObj);
       chessRecordArr.state = 1;
     } else if (chessRecordArr.state === 1) {
-      record = chessRecordArr[chessRecordArr.length - 1];
-      if (!record[key]) {
-        record[key] = chessI;
+      recordObj = chessRecordArr[chessRecordArr.length - 1];
+      if (!recordObj[key]) {
+        recordObj[key] = chessI;
         chessRecordArr.state = 0;
-        return record;
+        return recordObj;
       }
     }
     return false;
@@ -95,11 +95,12 @@ module.exports = {
     recordMap = this.getRecordByUid(uid);
     pushResult = recordMap.pushChess(uid, chessI);
     playersArr = recordMap.getPlayers(uid);
+    console.log(pushResult);
     if (pushResult) {
-      sails.sockets.emit(playersArr[0].sid, {
+      sails.sockets.emit(playersArr[0].sid, 'fight', {
         record: pushResult
       });
-      sails.sockets.emit(playersArr[1].sid, {
+      sails.sockets.emit(playersArr[1].sid, 'fight', {
         record: pushResult
       });
       return true;

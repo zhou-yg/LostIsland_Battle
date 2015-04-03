@@ -18,17 +18,22 @@ class BattleMapOne
     key = 'u'+uid
 
     if chessRecordArr.state is 0
-      chessRecordArr.push {
-        key:chessI
-      }
-      chessRecordArr.state = 1
-    else if chessRecordArr.state is 1
-      record = chessRecordArr[chessRecordArr.length-1]
-      if !record[key]
-        record[key] = chessI
-        chessRecordArr.state = 0
-        return record
 
+      recordObj = {}
+      recordObj[key] = chessI
+
+      chessRecordArr.push recordObj
+      chessRecordArr.state = 1
+
+    else if chessRecordArr.state is 1
+
+      recordObj = chessRecordArr[chessRecordArr.length-1]
+
+      if !recordObj[key]
+        recordObj[key] = chessI
+        chessRecordArr.state = 0
+
+        return recordObj
     return false
 
   getPlayers:(uid)->
@@ -86,18 +91,18 @@ module.exports =
     pushResult = recordMap.pushChess uid,chessI
     playersArr = recordMap.getPlayers(uid)
 
+    console.log pushResult
     #分发
     if pushResult
-      sails.sockets.emit playersArr[0].sid,{
+      sails.sockets.emit(playersArr[0].sid,'fight',{
         record:pushResult
-      }
-      sails.sockets.emit playersArr[1].sid,{
+      })
+      sails.sockets.emit(playersArr[1].sid,'fight',{
         record:pushResult
-      }
+      })
       return true
     else
       return false
-
 
   #---------------------#
   getRecordByRid:(recordIndex)->
