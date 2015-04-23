@@ -18,16 +18,19 @@ module.exports = {
     }
   },
   remove: function(player) {
-    var i, p, _i, _len;
+    var find, i, p, _i, _len;
+    find = false;
     for (i = _i = 0, _len = playerWaitList.length; _i < _len; i = ++_i) {
       p = playerWaitList[i];
       if (player === p) {
+        find = true;
         break;
       }
     }
-    if (i !== void 0) {
-      return playerWaitList.splice(i, 1);
+    if (find) {
+      find = playerWaitList.splice(i, 1);
     }
+    return find;
   },
   display: function() {
     return playerWaitList;

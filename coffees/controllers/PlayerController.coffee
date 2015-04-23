@@ -1,5 +1,5 @@
 module.exports =
-  #socket
+  #http
   add:(req,res)->
     sid = req.socket.id
     uid = req.param('uid')
@@ -10,7 +10,7 @@ module.exports =
       'sid':sid
       'uid':uid
     }
-  #http
+  #socket
   match:(req,res)->
     uid = req.parameter.uid
     rivalPlayer = battleMapList.match(uid)

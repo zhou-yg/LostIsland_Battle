@@ -97,6 +97,7 @@ module.exports = {
     playersArr = recordMap.getPlayers(uid);
     console.log(pushResult);
     if (pushResult) {
+      console.log(playersArr[0].sid, playersArr[1].sid);
       sails.sockets.emit(playersArr[0].sid, 'fight', {
         record: pushResult
       });
@@ -109,56 +110,65 @@ module.exports = {
     }
   },
   getRecordByRid: function(recordIndex) {
-    var i, recordMap, _i, _len;
+    var find, i, recordMap, _i, _len;
+    find = false;
     for (i = _i = 0, _len = battleMapList.length; _i < _len; i = ++_i) {
       recordMap = battleMapList[i];
       if (recordMap.recordId === recordIndex) {
+        find = true;
         break;
       }
     }
-    if (i !== void 0) {
-      return battleMapList[i];
+    if (find) {
+      find = battleMapList[i];
     }
-    return false;
+    return find;
   },
   getRecordByUid: function(uid) {
-    var i, recordMap, _i, _len;
+    var find, i, recordMap, _i, _len;
+    find = [];
     for (i = _i = 0, _len = battleMapList.length; _i < _len; i = ++_i) {
       recordMap = battleMapList[i];
       if (recordMap.checkUid(uid)) {
-        break;
+        find.push(recordMap);
       }
     }
-    if (i !== void 0) {
-      return battleMapList[i];
+    if (find.length > 0) {
+      find = find.pop();
+    } else {
+      find = false;
     }
-    return false;
+    return find;
   },
   removeRecordByUid: function(uid) {
-    var i, recordMap, _i, _len;
+    var find, i, recordMap, _i, _len;
+    find = false;
     for (i = _i = 0, _len = battleMapList.length; _i < _len; i = ++_i) {
       recordMap = battleMapList[i];
       if (recordMap.checkUid(uid)) {
+        find = true;
         break;
       }
     }
-    if (i !== void 0) {
-      return battleMapList.splice(i, 1);
+    if (find) {
+      find = battleMapList.splice(i, 1);
     }
-    return false;
+    return find;
   },
   removeRecordByRid: function(recordIndex) {
-    var i, recordMap, _i, _len;
+    var find, i, recordMap, _i, _len;
+    find = false;
     for (i = _i = 0, _len = battleMapList.length; _i < _len; i = ++_i) {
       recordMap = battleMapList[i];
       if (recordMap.recordId === recordIndex) {
+        find = true;
         break;
       }
     }
-    if (i !== void 0) {
-      return battleMapList.splice(i, 1);
+    if (find) {
+      find = battleMapList.splice(i, 1);
     }
-    return false;
+    return find;
   },
   display: function() {
     return battleMapList;

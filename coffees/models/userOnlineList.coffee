@@ -31,29 +31,38 @@ module.exports =
     playerOnlineList.push(player)
 
   getPlayerBySid:(sid)->
+    find = false
     for p,i in playerOnlineList
       if p.sid is sid
+        find = true
         break
-    return p
+    if find
+      find = p
+    return find
 
   getPlayerByUid:(uid)->
-    getResult = false
+    find = false
     for p in playerOnlineList
       if p.uid is uid
-        getResult = true
+        find = true
         break
 
-    return if getResult then p else null
+    if find
+      find = p
+    return find
 
   #下线，同时移除在线列表，和等待列表
   removePlayer:(sid)->
+    find = false
     for p,i in playerOnlineList
       if p.sid is sid
+        find = true
         break
 
-    if i isnt undefined
-      playerOnlineList.splice(i,1)
+    if find
+      find = playerOnlineList.splice(i,1)
       playerWaitList.remove(p)
+    return find
 
   showList:->
     console.log playerOnlineList

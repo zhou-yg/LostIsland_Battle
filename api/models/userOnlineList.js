@@ -48,43 +48,50 @@ module.exports = {
     return playerOnlineList.push(player);
   },
   getPlayerBySid: function(sid) {
-    var i, p, _i, _len;
+    var find, i, p, _i, _len;
+    find = false;
     for (i = _i = 0, _len = playerOnlineList.length; _i < _len; i = ++_i) {
       p = playerOnlineList[i];
       if (p.sid === sid) {
+        find = true;
         break;
       }
     }
-    return p;
+    if (find) {
+      find = p;
+    }
+    return find;
   },
   getPlayerByUid: function(uid) {
-    var getResult, p, _i, _len;
-    getResult = false;
+    var find, p, _i, _len;
+    find = false;
     for (_i = 0, _len = playerOnlineList.length; _i < _len; _i++) {
       p = playerOnlineList[_i];
       if (p.uid === uid) {
-        getResult = true;
+        find = true;
         break;
       }
     }
-    if (getResult) {
-      return p;
-    } else {
-      return null;
+    if (find) {
+      find = p;
     }
+    return find;
   },
   removePlayer: function(sid) {
-    var i, p, _i, _len;
+    var find, i, p, _i, _len;
+    find = false;
     for (i = _i = 0, _len = playerOnlineList.length; _i < _len; i = ++_i) {
       p = playerOnlineList[i];
       if (p.sid === sid) {
+        find = true;
         break;
       }
     }
-    if (i !== void 0) {
-      playerOnlineList.splice(i, 1);
-      return playerWaitList.remove(p);
+    if (find) {
+      find = playerOnlineList.splice(i, 1);
+      playerWaitList.remove(p);
     }
+    return find;
   },
   showList: function() {
     return console.log(playerOnlineList);

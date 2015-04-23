@@ -94,6 +94,7 @@ module.exports =
     console.log pushResult
     #分发
     if pushResult
+      console.log(playersArr[0].sid,playersArr[1].sid)
       sails.sockets.emit(playersArr[0].sid,'fight',{
         record:pushResult
       })
@@ -106,40 +107,49 @@ module.exports =
 
   #---------------------#
   getRecordByRid:(recordIndex)->
+    find = false
     for recordMap,i in battleMapList
       if recordMap.recordId is recordIndex
+        find = true
         break;
 
-    if i isnt undefined
-      return battleMapList[i]
-    return false
+    if find
+      find = battleMapList[i]
+    return find
 
   getRecordByUid:(uid)->
+    find = []
     for recordMap,i in battleMapList
       if recordMap.checkUid(uid)
-        break;
+        find.push(recordMap)
 
-    if i isnt undefined
-      return battleMapList[i]
-    return false
+    if find.length>0
+      find = find.pop()
+    else
+      find = false
+    return find
 
   removeRecordByUid:(uid)->
+    find = false
     for recordMap,i in battleMapList
       if recordMap.checkUid(uid)
+        find = true
         break;
 
-    if i isnt undefined
-      return battleMapList.splice(i,1)
-    return false
+    if find
+      find = battleMapList.splice(i,1)
+    return find
 
   removeRecordByRid:(recordIndex)->
+    find = false
     for recordMap,i in battleMapList
       if recordMap.recordId is recordIndex
+        find = true
         break;
 
-    if i isnt undefined
-      return battleMapList.splice(i,1)
-    return false
+    if find
+      find = battleMapList.splice(i,1)
+    return find
 
   display:->
     return battleMapList
