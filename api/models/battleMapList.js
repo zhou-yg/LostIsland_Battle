@@ -1,11 +1,22 @@
-var BattleMapOne, battleMapList, matchFn, recordIndex;
+var BattleMapOne, battleMapList, matchFn, recordIndex, turnMax, windDotsMax;
+
+recordIndex = 0;
+
+battleMapList = [];
+
+windDotsMax = 3;
+
+turnMax = 5;
 
 BattleMapOne = (function() {
   function BattleMapOne(p1, p2) {
     this.p1 = p1;
     this.p2 = p2;
     this.recordId = recordIndex++;
+    this.recordPre = 'u';
     this.p1.recordId = this.p2.recordId = this.recordId;
+    this.windDotsMax = windDotsMax;
+    this.p1WinDots = this.p2WinDots = 0;
     this.chessRecordArr = [];
     this.chessRecordArr.state = 0;
   }
@@ -14,27 +25,77 @@ BattleMapOne = (function() {
     return this.p1.uid === uid || this.p2.uid === uid;
   };
 
-  BattleMapOne.prototype.pushChess = function(uid, chessI) {
-    var chessRecordArr, key, recordObj;
-    if (!this.checkUid(uid)) {
-      return false;
-    }
+  BattleMapOne.prototype.checkResult = function() {
+    var battleResult, chessRecordArr, fightResult, latestRecordObj, p1ChessI, p2ChessI;
+    battleResult = false;
     chessRecordArr = this.chessRecordArr;
-    key = 'u' + uid;
-    if (chessRecordArr.state === 0) {
-      recordObj = {};
-      recordObj[key] = chessI;
-      chessRecordArr.push(recordObj);
-      chessRecordArr.state = 1;
-    } else if (chessRecordArr.state === 1) {
-      recordObj = chessRecordArr[chessRecordArr.length - 1];
-      if (!recordObj[key]) {
-        recordObj[key] = chessI;
-        chessRecordArr.state = 0;
-        return recordObj;
+    latestRecordObj = chessRecordArr[chessRecordArr.length - 1];
+    p1ChessI = latestRecordObj[this.recordPre + this.p1.uid];
+    p2ChessI = latestRecordObj[this.recordPre + this.p2.uid];
+    fightResult = chessBattleCenter.fightByChessI(p1ChessI, p2ChessI);
+    console.log('battleResult:', battleResult);
+    if (fightResult === -1) {
+      this.p2WinDots++;
+    } else if (fightResult === 1) {
+      this.p1WinDots++;
+    } else if (fightResult === 0) {
+      this.windDotsMax++;
+      this.p1WinDots++;
+      this.p2WinDots++;
+    }
+    console.log('------------------------');
+    console.log('windDotsMax:', windDotsMax);
+    console.log('@p1WinDots:', this.p1WinDots);
+    console.log('@p2WinDots:', this.p2WinDots);
+    if (this.p1WinDots === this.windDotsMax) {
+      battleResult = ['p1', 'p2'];
+    } else if (this.p2WinDots === this.windDotsMax) {
+      battleResult = ['p2', 'p1'];
+    } else if (chessRecordArr.length === turnMax) {
+      if (this.p1WinDots > this.p2WinDots) {
+        battleResult = ['p1', 'p2'];
+      } else if (this.p1WinDots < this.p2WinDots) {
+        battleResult = ['p2', 'p1'];
+      } else {
+        battleResult = 'equal';
       }
     }
-    return false;
+    return battleResult;
+  };
+
+  BattleMapOne.prototype.pushChess = function(uid, chessI) {
+    var checkResult, chessRecordArr, key, pushResult, recordObj;
+    pushResult = false;
+    if (this.checkUid(uid)) {
+      chessRecordArr = this.chessRecordArr;
+      key = this.recordPre + uid;
+      if (chessRecordArr.state === 0) {
+        recordObj = {};
+        recordObj[key] = chessI;
+        chessRecordArr.push(recordObj);
+        chessRecordArr.state = 1;
+      } else if (chessRecordArr.state === 1) {
+        recordObj = chessRecordArr[chessRecordArr.length - 1];
+        if (!recordObj[key]) {
+          recordObj[key] = chessI;
+          chessRecordArr.state = 0;
+          checkResult = this.checkResult();
+          console.log('checkResult:', checkResult);
+          if (checkResult) {
+            recordObj.end = true;
+            if (checkResult === 'equal') {
+              recordObj.win = false;
+            } else {
+              console.log('@[checkResult[0]]:', this[checkResult[0]]);
+              recordObj.win = this[checkResult[0]].uid;
+              recordObj.lose = this[checkResult[1]].uid;
+            }
+          }
+          pushResult = recordObj;
+        }
+      }
+    }
+    return pushResult;
   };
 
   BattleMapOne.prototype.getPlayers = function(uid) {
@@ -60,10 +121,6 @@ matchFn = function(player) {
     return null;
   }
 };
-
-recordIndex = 0;
-
-battleMapList = [];
 
 module.exports = {
   match: function(uid) {
@@ -91,23 +148,31 @@ module.exports = {
     }
   },
   fight: function(uid, chessI) {
-    var playersArr, pushResult, recordMap;
+    var fightResult, playersArr, pushResult, recordMap;
+    fightResult = false;
     recordMap = this.getRecordByUid(uid);
     pushResult = recordMap.pushChess(uid, chessI);
     playersArr = recordMap.getPlayers(uid);
-    console.log(pushResult);
+    console.log('pushResult:', pushResult);
     if (pushResult) {
-      console.log(playersArr[0].sid, playersArr[1].sid);
-      sails.sockets.emit(playersArr[0].sid, 'fight', {
-        record: pushResult
-      });
-      sails.sockets.emit(playersArr[1].sid, 'fight', {
-        record: pushResult
-      });
-      return true;
-    } else {
-      return false;
+      if (pushResult.end) {
+        sails.sockets.emit(playersArr[0].sid, 'fightResult', {
+          record: pushResult
+        });
+        sails.sockets.emit(playersArr[1].sid, 'fightResult', {
+          record: pushResult
+        });
+      } else {
+        sails.sockets.emit(playersArr[0].sid, 'fight', {
+          record: pushResult
+        });
+        sails.sockets.emit(playersArr[1].sid, 'fight', {
+          record: pushResult
+        });
+      }
+      fightResult = true;
     }
+    return fightResult;
   },
   getRecordByRid: function(recordIndex) {
     var find, i, recordMap, _i, _len;
